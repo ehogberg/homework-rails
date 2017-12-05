@@ -1,42 +1,42 @@
 class ApiController < ApplicationController
-  before_action :set_default_format
   
   def add
     @new_people = request.body.map do |l|
       p = Person.new.attributes_from_line(l)
       p.save!
       p.reload
-      p
     end
-    respond_to do |fmt|
-      fmt.json { render json: @new_people }
-    end
+
+    render json: @new_people 
   end
 
   def gender
-    @people = Person.order("gender asc, lname desc")
-    respond_to do |fmt|
-      fmt.json { render json: @people }
-    end
+    render jsonapi: get_people("gender asc, lname desc"),
+                    meta: standard_meta.merge(sort: :gender),
+                    links: {self: api_gender_url}
   end
 
   def name
-    @people = Person.order(:lname,:fname)
-    respond_to do |fmt|
-      fmt.json { render json: @people }
-    end
+    render jsonapi: get_people(:lname,:fname),
+                    meta: standard_meta.merge(sort: :name),
+                    links: {self: api_name_url}
   end
 
   def birthdate
-    @people = Person.order(:birthdate)
-    respond_to do |fmt|
-      fmt.json { render json: @people }
-    end    
+    render jsonapi: get_people("birthdate asc, lname desc"),
+                    meta: standard_meta.merge(sort: :birthdate),
+                    links: {self: api_birthdate_url}
   end
   
 private
 
-  def set_default_format
-    request.format = "json"
+  # DRY out records retrieval, w/ pagination support.
+  def get_people(sort)
+    Person.order(sort).page(params[:page]).per(params[:per_page])
+  end
+  
+  def standard_meta
+    {ns: "org.homework",page: params[:page] || 1,
+     per_page: params[:per_page] || 25}
   end
 end
