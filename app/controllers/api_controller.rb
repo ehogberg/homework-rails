@@ -1,13 +1,16 @@
 class ApiController < ApplicationController
   
   def add
-    @new_people = request.body.map do |l|
-      p = Person.new.attributes_from_line(l)
-      p.save!
-      p.reload
+    person = Person.new.attributes_from_line(request.body.first)
+    
+    if person.valid?
+      render jsonapi: person,
+             meta: standard_meta
+    else
+      render jsonapi_errors: person.errors,
+            meta: standard_meta,
+            status: :unprocessable_entity
     end
-
-    render json: @new_people 
   end
 
   def gender
@@ -36,10 +39,12 @@ private
   end
   
   def standard_meta
-    {ns: "org.homework",
-     page: params[:page] || 1,
-     per_page: params[:per_page] || 25,
-     timestamp: Time.now.to_i
-    }
+    now = Time.now
+    
+    { ns: "org.homework",
+      page: params[:page] || 1,
+      per_page: params[:per_page] || 25,
+      human_readable_date: now.to_s,
+      timestamp: now.to_i }
   end
 end
