@@ -4,6 +4,7 @@ class Person < ApplicationRecord
     def attributes_from_line(l)
         a = l.split(determine_field_delimiter(l))
         self.attributes = [:lname,:fname,:gender,:color,:birthdate].zip(a).to_h
+        self
     end
    
 private
