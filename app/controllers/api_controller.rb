@@ -3,9 +3,10 @@ class ApiController < ApplicationController
   def add
     person = Person.new.attributes_from_line(request.body.first)
     
-    if person.valid?
+    if person.save
       render jsonapi: person,
-             meta: standard_meta
+             meta: standard_meta,
+             status: :created
     else
       render jsonapi_errors: person.errors,
             meta: standard_meta,

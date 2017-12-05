@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'admin/purge'
+
   scope '/records', as: "records", controller: :api  do
     post '/', action: :add
     get '/gender', action: :gender
