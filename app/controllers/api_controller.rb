@@ -13,19 +13,19 @@ class ApiController < ApplicationController
   def gender
     render jsonapi: get_people("gender asc, lname desc"),
                     meta: standard_meta.merge(sort: :gender),
-                    links: {self: api_gender_url}
+                    links: {self: records_gender_url}
   end
 
-  def name
-    render jsonapi: get_people(:lname,:fname),
+  def lname
+    render jsonapi: get_people([:lname,:fname]),
                     meta: standard_meta.merge(sort: :name),
-                    links: {self: api_name_url}
+                    links: {self: records_name_url}
   end
 
   def birthdate
     render jsonapi: get_people("birthdate asc, lname desc"),
                     meta: standard_meta.merge(sort: :birthdate),
-                    links: {self: api_birthdate_url}
+                    links: {self: records_birthdate_url}
   end
   
 private
@@ -36,7 +36,10 @@ private
   end
   
   def standard_meta
-    {ns: "org.homework",page: params[:page] || 1,
-     per_page: params[:per_page] || 25}
+    {ns: "org.homework",
+     page: params[:page] || 1,
+     per_page: params[:per_page] || 25,
+     timestamp: Time.now.to_i
+    }
   end
 end
