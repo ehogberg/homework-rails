@@ -33,7 +33,7 @@ class ApiController < ApplicationController
   end
   
   def upload
-    upload_results = process_upload(params[:file])
+    upload_results = start_upload_job(params[:file])
     
     render jsonapi: nil,
                     meta: standard_meta.merge(upload_results)
@@ -59,22 +59,24 @@ private
       timestamp: now.to_i }
   end
   
-  def process_upload(tempfile)
-    new_people = 0
-    errs = 0
-
-    lines = StringIO.new(tempfile.read)
-    lines.each_line do |l|
-        begin
-          Person.new.attributes_from_line(l).save!
-          new_people += 1
-        rescue Exception
-          errs += 1
-        end
-    end 
+  def start_upload_job(data_file)
+    temppath = data_file.tempfile.path
+    tempname = File.basename(temppath)
     
-    {records_created: new_people, errors: errs}
+    upload_file_to_s3(temppath)
     
+    ProcessUploadFileJob.perform_later(tempname)
+    
+    {datafile_name: tempname}
   end
   
+  def upload_file_to_s3(tempfile)
+    s3 = Aws::S3::Resource.new(region: ENV['AWS_REGION'])
+
+    bucket = 'homework-data-uploads'
+    name = File.basename(tempfile)
+
+    obj = s3.bucket(bucket).object(name)
+    obj.upload_file(tempfile)
+  end
 end
