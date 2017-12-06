@@ -18,7 +18,7 @@ private
     # appropriate for that.
     def determine_field_delimiter(l)
         if l =~ /[\,\|]/ 
-            /\s[\,\|]\s/
+            /\s*[\,\|]\s*/
         else
             /\s/
         end
