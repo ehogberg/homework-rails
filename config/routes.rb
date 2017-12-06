@@ -3,7 +3,8 @@ Rails.application.routes.draw do
   get 'admin/purge'
 
   scope '/records', as: "records", controller: :api  do
-    post '/', action: :add
+    put '/', action: :add
+    post '/upload', action: :upload
     get '/gender', action: :gender
     get '/name', action: :lname
     get '/birthdate', action: :birthdate
