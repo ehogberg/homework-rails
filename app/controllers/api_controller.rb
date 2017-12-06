@@ -35,7 +35,8 @@ class ApiController < ApplicationController
   def upload
     upload_results = process_upload(params[:file])
     
-    render json: {meta: standard_meta.merge(upload_results)}
+    render jsonapi: nil,
+                    meta: standard_meta.merge(upload_results)
   end
  
 private
