@@ -85,6 +85,7 @@ private
   end
   
   def upload_file_to_s3(tempfile)
+
     s3 = Aws::S3::Resource.new(region: ENV['AWS_REGION'])
 
     bucket = ENV['S3_BUCKET']

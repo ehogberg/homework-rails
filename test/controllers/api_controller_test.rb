@@ -32,4 +32,15 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "upload accepts a file and starts a job" do
+    post records_upload_url, 
+      params: {file: fixture_file_upload("files/upload_data.txt"),
+               report_to_address: "someone@somewhere.com" }
+    assert_response :success
+    
+    response_hash = JSON.parse @response.body
+    assert response_hash["meta"]["job_id"].present?
+    assert response_hash["meta"]["send_report_to"] == "someone@somewhere.com"
+  end
+  
 end
