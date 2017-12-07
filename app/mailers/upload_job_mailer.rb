@@ -1,14 +1,12 @@
 class UploadJobMailer < ApplicationMailer
 
-  # Subject can be set in your I18n file at config/locales/en.yml
-  # with the following lookup:
-  #
-  #   en.upload_job_mailer.finished.subject
-  #
+  def started(job,status_link)
+      @job = job
+      @status_link = status_link
+      mail to: job.send_report_address, subject: "Thank you for uploading a data file"
+  end
+  
   def finished(job)
-    @greeting = "Hi"
-
-    mail to: job.send_report_address, subject: "Upload file processing complete."
-    
+      mail to: job.send_report_address, subject: "Upload file processing complete."
   end
 end

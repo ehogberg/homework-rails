@@ -6,4 +6,8 @@ class UploadJobMailerPreview < ActionMailer::Preview
     UploadJobMailer.finished(UploadJob.find(1))
   end
 
+  def started
+    job = UploadJob.find(10)
+    UploadJobMailer.started(job, "/some/path/to/job/10")
+  end
 end

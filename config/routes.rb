@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'job/:id' => 'job#show', as: "job_info"
+
   get 'admin/purge'
 
   scope '/records', as: "records", controller: :api  do

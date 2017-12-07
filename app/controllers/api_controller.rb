@@ -75,6 +75,7 @@ private
                         send_report_address: send_report_address)
     if job.save
       ProcessUploadFileJob.perform_later(job)
+      UploadJobMailer.started(job,job_info_url(job)).deliver_later unless job.send_report_address.nil?
       { datafile_name: tempname,
         send_report_to: send_report_address,
         job_id: job.id  }

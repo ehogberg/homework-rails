@@ -1,13 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  filename: MyString
+  id: 1
+  filename: FirstFile
   completed_at: 2017-12-06 20:07:16
   report: MyText
   send_report_address: someone@somewhere.com
 
 two:
-  filename: MyString
+  id: 2
+  filename: SecondFile
   completed_at: 2017-12-06 20:07:16
   report: MyText
   send_report_address: another@elsewhere.net
