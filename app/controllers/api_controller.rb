@@ -1,4 +1,5 @@
 class ApiController < ApplicationController
+  include Meta
   
   def add
     person = Person.new.attributes_from_line(request.body.first)
@@ -50,19 +51,6 @@ private
   # DRY out records retrieval, w/ pagination support.
   def get_people(sort)
     Person.order(sort).page(params[:page]).per(params[:per_page])
-  end
-  
-  def standard_pageable_meta
-    standard_meta.merge(page: (params[:page] || 1),
-                        per_page: (params[:per_page] || 25))
-  end
-  
-  def standard_meta
-    now = Time.now
-    
-    { ns: "org.homework",
-      human_readable_date: now.to_s,
-      timestamp: now.to_i }
   end
   
   def start_upload_job(data_file,send_report_address)
