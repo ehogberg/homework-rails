@@ -4,8 +4,10 @@ one:
   filename: MyString
   completed_at: 2017-12-06 20:07:16
   report: MyText
+  send_report_address: someone@somewhere.com
 
 two:
   filename: MyString
   completed_at: 2017-12-06 20:07:16
   report: MyText
+  send_report_address: another@elsewhere.net
