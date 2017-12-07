@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171205014540) do
+ActiveRecord::Schema.define(version: 20171207010023) do
 
   create_table "people", force: :cascade do |t|
     t.string "lname"
@@ -20,6 +20,17 @@ ActiveRecord::Schema.define(version: 20171205014540) do
     t.date "birthdate"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "upload_jobs", force: :cascade do |t|
+    t.string "filename"
+    t.datetime "completed_at"
+    t.text "report"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "error_count", default: 0
+    t.integer "processed_count", default: 0
+    t.string "send_report_address"
   end
 
 end

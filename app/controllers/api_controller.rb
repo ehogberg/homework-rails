@@ -33,10 +33,16 @@ class ApiController < ApplicationController
   end
   
   def upload
-    upload_results = start_upload_job(params[:file])
-    
-    render jsonapi: nil,
-                    meta: standard_meta.merge(upload_results)
+    upload_results = start_upload_job(params[:file], params[:report_to_address])
+
+    if upload_results
+      render jsonapi: nil,
+                      meta: standard_meta.merge(upload_results)
+    else
+      render json: {errors: [{message: "Problem starting upload job."}],
+                    meta: standard_meta},
+                    status: :unprocessable_entity
+    end
   end
  
 private
@@ -59,21 +65,29 @@ private
       timestamp: now.to_i }
   end
   
-  def start_upload_job(data_file)
+  def start_upload_job(data_file,send_report_address)
     temppath = data_file.tempfile.path
     tempname = File.basename(temppath)
     
     upload_file_to_s3(temppath)
     
-    ProcessUploadFileJob.perform_later(tempname)
-    
-    {datafile_name: tempname}
+    job = UploadJob.new(filename: tempname,
+                        send_report_address: send_report_address)
+    if job.save
+      ProcessUploadFileJob.perform_later(job)
+      { datafile_name: tempname,
+        send_report_to: send_report_address,
+        job_id: job.id  }
+    else
+      log.error "Problem creating upload job"
+      nil
+    end
   end
   
   def upload_file_to_s3(tempfile)
     s3 = Aws::S3::Resource.new(region: ENV['AWS_REGION'])
 
-    bucket = 'homework-data-uploads'
+    bucket = ENV['S3_BUCKET']
     name = File.basename(tempfile)
 
     obj = s3.bucket(bucket).object(name)

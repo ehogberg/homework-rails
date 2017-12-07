@@ -1,24 +1,29 @@
 class ProcessUploadFileJob < ApplicationJob
   queue_as :default
 
-  def perform(filename)
-    processing_file = "#{Dir.tmpdir()}/process-#{filename}"
+  def perform(job)
     
-    s3 = Aws::S3::Resource.new(region: ENV["AWS_REGION"])
-    s3.bucket('homework-data-uploads')
-      .object(filename)
-      .download_file(processing_file)
-      
-    count_errors = 0
-    count_added = 0
-    IO.foreach(processing_file) do |l|
-      begin
-        Person.new.attributes_from_line(l).save!
-        count_added += 1
-      rescue
-        count_errors += 1
+    begin
+      job.create_processing_file
+    
+      count_errors = 0
+      count_added = 0
+      IO.foreach(job.processing_tempfile) do |l|
+        begin
+          Person.new.attributes_from_line(l).save!
+          count_added += 1
+        rescue
+          count_errors += 1
+        end
       end
+      job.purge_processing_file
+      job.update_attributes(completed_at: DateTime.now,
+                            error_count: count_errors,
+                            processed_count: count_added)
+    rescue Exception => e
+      log.error "Problem while processing upload file: #{e.to_s}"
     end
-    File.delete(processing_file)
+    
+    UploadJobMailer.finished(job).deliver_later unless job.send_report_address.nil?
   end
 end
