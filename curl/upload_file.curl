@@ -1,0 +1,6 @@
+curl -X POST \
+  https://homework-rails-hogberg.c9users.io/records/upload \
+  -H 'Cache-Control: no-cache' \
+  -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
+  -F file=@./curl/test_data_pipes.txt \
+  -F report_to_address=eric@erichogberg.com

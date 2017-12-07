@@ -1,0 +1,3 @@
+curl -X GET \
+  https://homework-rails-hogberg.c9users.io/admin/purge \
+  -H 'Cache-Control: no-cache' \
